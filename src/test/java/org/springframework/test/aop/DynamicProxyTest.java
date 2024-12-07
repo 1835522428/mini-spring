@@ -21,8 +21,10 @@ public class DynamicProxyTest {
 		WorldService worldService = new WorldServiceImpl();
 
 		AdvisedSupport advisedSupport = new AdvisedSupport();
+		//被代理对象的封装
 		TargetSource targetSource = new TargetSource(worldService);
 		WorldServiceInterceptor methodInterceptor = new WorldServiceInterceptor();
+		//方法拦截器，可以在被代理执行的方法前后增加代理行为
 		MethodMatcher methodMatcher = new AspectJExpressionPointcut("execution(* org.springframework.test.service.WorldService.explode(..))").getMethodMatcher();
 		advisedSupport.setTargetSource(targetSource);
 		advisedSupport.setMethodInterceptor(methodInterceptor);
