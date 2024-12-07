@@ -15,7 +15,7 @@ import org.springframework.test.service.WorldServiceImpl;
  * @date 2020/12/6
  */
 public class DynamicProxyTest {
-
+//1
 	@Test
 	public void testJdkDynamicProxy() throws Exception {
 		WorldService worldService = new WorldServiceImpl();
