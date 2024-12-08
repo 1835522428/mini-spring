@@ -9,6 +9,7 @@ import java.lang.reflect.Proxy;
 
 /**
  * JDK动态代理
+ *
  * 要使用JDK动态代理其实核心就是一件事：
  * 		通过Proxy.newProxyInstance创建代理对象proxy，其中代理对象proxy拥有被代理对象的所有方法
  * 调用Proxy.newProxyInstance方法时需要传递三个参数：
