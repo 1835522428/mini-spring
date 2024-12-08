@@ -57,6 +57,10 @@ public class DynamicProxyTest {
 		advisedSupport.setMethodMatcher(methodMatcher);
 	}
 
+	/**
+	 * JDK动态代理实现
+	 * @throws Exception
+	 */
 	@Test
 	public void testJdkDynamicProxy() throws Exception {
 		WorldService proxy = (WorldService) new JdkDynamicAopProxy(advisedSupport).getProxy();
