@@ -27,6 +27,14 @@ public class DynamicProxyTest {
 			方法拦截器是真正去执行代理功能的类
 			MethodMatcher是切点表达式，指明要代理的对象范围
 
+			那这时候有个问题，既然传入了代理对象，为什么还需要传入切点表达式呢
+			这是因为一个代理对象里面可能有很多个方法，有的方法需要被增强，有的方法不需要加强
+			切点表达式可以指明要加强的具体是哪些方法
+			代理对象中只有在切点表达式范围内的方法会执行方法拦截器中的内容，实现方法增强
+
+			使用JDK动态代理时，由于需要频繁使用这三个元素，所以这里创建了一个类AdvisedSupport
+			用来封装这三个元素，之后要使用的时候从AdvisedSupport里面拿就可以了
+
 			其实这个测试类原理很简单，就是先有一个WorldServiceImpl对象
 			然后通过某种方式生成了一个WorldServiceImpl的代理对象proxy
 			在调用代理对象proxy.explode()方法时，转而去执行了WorldServiceInterceptor里面的内容
