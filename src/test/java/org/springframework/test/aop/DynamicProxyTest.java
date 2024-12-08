@@ -42,9 +42,16 @@ public class DynamicProxyTest {
 		WorldService worldService = new WorldServiceImpl();
 
 		advisedSupport = new AdvisedSupport();
+		/*
+			被代理对象，根据这个创建代理对象proxy
+			proxy会实现被代理对象的接口，从而获得被代理对象里面所有的方法
+		 */
 		TargetSource targetSource = new TargetSource(worldService);
+		//方法拦截器，里面的invoke方法是代理对象实际执行的方法
 		WorldServiceInterceptor methodInterceptor = new WorldServiceInterceptor();
+		//切点表达式，指向WorldService.explode()方法
 		MethodMatcher methodMatcher = new AspectJExpressionPointcut("execution(* org.springframework.test.service.WorldService.explode(..))").getMethodMatcher();
+		//组装AdvisedSupport
 		advisedSupport.setTargetSource(targetSource);
 		advisedSupport.setMethodInterceptor(methodInterceptor);
 		advisedSupport.setMethodMatcher(methodMatcher);
