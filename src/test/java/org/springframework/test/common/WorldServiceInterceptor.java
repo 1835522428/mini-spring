@@ -4,6 +4,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 /**
+ * 方法拦截器，必须要实现MethodInterceptor接口
+ * 在动态代理中，代理方法实际执行的就是拦截器中的invoke方法
  * @author derekyi
  * @date 2020/12/6
  */
