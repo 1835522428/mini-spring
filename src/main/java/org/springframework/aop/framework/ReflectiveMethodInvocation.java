@@ -25,6 +25,7 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
 
 	@Override
 	public Object proceed() throws Throwable {
+		//其实就是invoke方法，反射执行原有方法代码
 		return method.invoke(target, arguments);
 	}
 
