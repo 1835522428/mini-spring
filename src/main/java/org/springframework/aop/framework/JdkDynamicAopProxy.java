@@ -39,7 +39,7 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 	 */
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		//是否匹配切点表达式
+		//proxy的该方法是否匹配切点表达式（proxy里面有很多方法，有的匹配，有的不匹配）
 		if (advised.getMethodMatcher().matches(method, advised.getTargetSource().getTarget().getClass())) {
 			//如果匹配切点表达式，则执行代理方法
 			MethodInterceptor methodInterceptor = advised.getMethodInterceptor();
