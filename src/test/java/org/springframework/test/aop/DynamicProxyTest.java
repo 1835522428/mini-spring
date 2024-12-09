@@ -32,6 +32,10 @@ public class DynamicProxyTest {
 
         advisedSupport = new AdvisedSupport();
         TargetSource targetSource = new TargetSource(worldService);
+        /*
+            注意这里跟cglib-dynamic-proxy分支不一样了，之前是直接创建了一个WorldServiceInterceptor
+            专门用于WorldService的方法增强，现在实现了一个通用的方法拦截器
+         */
         GenericInterceptor methodInterceptor = new GenericInterceptor();
         MethodMatcher methodMatcher = new AspectJExpressionPointcut("execution(* org.springframework.test.service.WorldService.explode(..))").getMethodMatcher();
         advisedSupport.setTargetSource(targetSource);
