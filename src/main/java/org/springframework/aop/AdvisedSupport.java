@@ -28,6 +28,7 @@ public class AdvisedSupport {
 
 	AdvisorChainFactory advisorChainFactory = new DefaultAdvisorChainFactory();
 
+	//记录方法拦截器链，每一个Advisor都是一个MethodInterceptor
 	private List<Advisor> advisors = new ArrayList<>();
 
 	public AdvisedSupport() {
@@ -65,12 +66,15 @@ public class AdvisedSupport {
 	public void setMethodMatcher(MethodMatcher methodMatcher) {
 		this.methodMatcher = methodMatcher;
 	}
+
 	/**
-	 * 用来返回方法的拦截器链
+	 * 用来返回方法的拦截器链，注意这时获得的拦截器链顺序可能是乱的
 	 */
 	public List<Object> getInterceptorsAndDynamicInterceptionAdvice(Method method, Class<?> targetClass) {
-		Integer cacheKey=method.hashCode();
+		Integer cacheKey = method.hashCode();
+		//methodCache是方法拦截器链的缓存
 		List<Object> cached = this.methodCache.get(cacheKey);
+		//如果没有缓存，则要去查找一边方法拦截器链然后放入缓存中
 		if (cached == null) {
 			cached = this.advisorChainFactory.getInterceptorsAndDynamicInterceptionAdvice(
 					this, method, targetClass);

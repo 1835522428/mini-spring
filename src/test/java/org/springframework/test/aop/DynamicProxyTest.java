@@ -43,6 +43,14 @@ public class DynamicProxyTest {
 		advisor.setAdvice(methodInterceptor);
 		TargetSource targetSource = new TargetSource(worldService);
 		advisedSupport.setTargetSource(targetSource);
+		/*
+			这里不再是advisedSupport.setMethodInterceptor了，换成了addAdvisor
+			AdvisedSupport.advisors定义为了List<Advisor>，即从单一的拦截方法改为了拥有一个拦截器链
+			一个Advisor里面有两个东西：切点表达式 + MethodInterceptor
+			MethodInterceptor是在InvocationHandler.invoke方法里面调用的，用于执行实际的增强方法
+			这里把一个AfterReturningAdviceInterceptor放入了AdvisedSupport.advisors
+			就是给拦截器链存入了一个返回增强方法
+		 */
 		advisedSupport.addAdvisor(advisor);
 	}
 
@@ -98,6 +106,7 @@ public class DynamicProxyTest {
 		advisor.setExpression(expression);
 		MethodBeforeAdviceInterceptor methodInterceptor = new MethodBeforeAdviceInterceptor(new WorldServiceBeforeAdvice());
 		advisor.setAdvice(methodInterceptor);
+		//给拦截器链新增一个MethodBeforeAdviceInterceptor（前置增强）拦截方法
 		advisedSupport.addAdvisor(advisor);
 		ProxyFactory factory = (ProxyFactory) advisedSupport;
 		WorldService proxy = (WorldService) factory.getProxy();

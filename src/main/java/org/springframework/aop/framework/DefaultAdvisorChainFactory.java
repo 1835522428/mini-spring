@@ -17,6 +17,13 @@ import java.util.List;
  */
 public class DefaultAdvisorChainFactory implements AdvisorChainFactory {
 
+	/**
+	 * 查找一个代理对象的某个方法的拦截器链（除了原方法以外的其他所有增强方法）
+	 * 在AdvisedSupport.advisors里面存储着所有的方法拦截器
+	 * 但是这些方法拦截器不一定会拦截当前方法，比方说拦截器1只增强方法A，拦截器2只增强方法B
+	 * 那我现在要找方法A的拦截器链，就要遍历AdvisedSupport.advisors，看里面哪些方法拦截器的切点表达式和当前方法匹配
+	 * 注意这时返回的拦截器链可能是乱序的，可能第一个是AfterReturning，第二个是Before
+	 */
 	@Override
 	public List<Object> getInterceptorsAndDynamicInterceptionAdvice(AdvisedSupport config, Method method, Class<?> targetClass) {
 		Advisor[] advisors = config.getAdvisors().toArray(new Advisor[0]);
