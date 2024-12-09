@@ -67,8 +67,33 @@ public class DynamicProxyTest {
 		proxy.explode();
 	}
 
+	/**
+	 * CGLIB动态代理实现
+	 * @throws Exception
+	 */
 	@Test
 	public void testCglibDynamicProxy() throws Exception {
+		/*
+			获取CGLIB动态代理对象proxy
+
+			由于CGLIB不基于接口实现动态代理，而是生成了被代理类的子类
+			所以这里proxy可以定义成
+				WorldServiceImpl proxy = (WorldServiceImpl) new CglibAopProxy(advisedSupport).getProxy();
+				//可以用父类接收子类，因为父类的范围更大，实现多态的基础 https://blog.51cto.com/u_16175493/10082683
+				//Student是Person的子类，是Student则一定是Person，是Person不一定是Student
+			而对于JDK动态代理就不能这么定义，只能用WorldService接收
+			因为JDK的代理对象proxy是实现WorldService接口的，他跟WorldServiceImpl是平级的，不是WorldServiceImpl的子类
+
+			画个简单易懂的图：
+					WorldService接口						 WorldService接口
+						/	   \						  	   	|
+					   /		\							   	|
+					  /		     \						 WorldServiceImpl（实现类）
+		   WorldServiceImpl	 JDK动态代理proxy						|
+			   （实现类）			（实现类）						|
+							只能用WorldService接收	     CGLIB动态代理proxy（extends WorldServiceImpl）
+														 这个proxy可以用WorldServiceImpl或者WorldService接收
+		 */
 		WorldService proxy = (WorldService) new CglibAopProxy(advisedSupport).getProxy();
 		proxy.explode();
 	}

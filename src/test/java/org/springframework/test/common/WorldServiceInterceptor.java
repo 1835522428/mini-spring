@@ -12,9 +12,9 @@ import org.aopalliance.intercept.MethodInvocation;
 public class WorldServiceInterceptor implements MethodInterceptor {
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		System.out.println("Do something before the earth explodes");
-		Object result = invocation.proceed();
-		System.out.println("Do something after the earth explodes");
+		System.out.println("Do something before the earth explodes");	//前置增强
+		Object result = invocation.proceed();							//被代理对象执行原方法
+		System.out.println("Do something after the earth explodes");	//后置增强
 		return result;
 	}
 }
