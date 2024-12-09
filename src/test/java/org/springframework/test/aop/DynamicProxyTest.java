@@ -35,6 +35,8 @@ public class DynamicProxyTest {
         /*
             注意这里跟cglib-dynamic-proxy分支不一样了，之前是直接创建了一个WorldServiceInterceptor
             专门用于WorldService的方法增强，现在实现了一个通用的方法拦截器
+            现在这个GenericInterceptor里面BeforeAdvice、AfterAdvice、AfterReturningAdvice、ThrowsAdvice属性都是空的
+            所以如果现在执行proxy的方法的话，就相当于执行原方法
          */
         GenericInterceptor methodInterceptor = new GenericInterceptor();
         MethodMatcher methodMatcher = new AspectJExpressionPointcut("execution(* org.springframework.test.service.WorldService.explode(..))").getMethodMatcher();
@@ -70,7 +72,13 @@ public class DynamicProxyTest {
 
     @Test
     public void testBeforeAdvice() throws Exception {
-        //设置BeforeAdvice
+        /*
+            设置BeforeAdvice
+
+            这里可以去看GenericInterceptor类的源码，如果没有设置BeforeAdvice，就没有前置增强方法
+            要实现BeforeAdvice接口，重写里面的before方法
+            把实现了BeforeAdvice的对象设置到GenericInterceptor里面
+         */
         WorldServiceBeforeAdvice beforeAdvice = new WorldServiceBeforeAdvice();
         GenericInterceptor methodInterceptor = new GenericInterceptor();
         methodInterceptor.setBeforeAdvice(beforeAdvice);
