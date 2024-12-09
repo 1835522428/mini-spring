@@ -25,6 +25,12 @@ public class DynamicProxyTest {
 
 	private AdvisedSupport advisedSupport;
 
+	/**
+	 * 无论是使用JDK动态代理还是使用CGLIB动态代理都需要使用以下三个参数：
+	 * 		被代理对象、方法拦截器（增强方法）、切点表达式
+	 * 所以就准备了一个工具类AdvisedSupport用来存储这三个元素
+	 * 而这实际上就是ProxyFactory里面需要的三个属性
+	 */
 	@Before
 	public void setup() {
 		WorldService worldService = new WorldServiceImpl();
@@ -40,23 +46,38 @@ public class DynamicProxyTest {
 		advisedSupport.addAdvisor(advisor);
 	}
 
+	/**
+	 * JDK动态代理测试
+	 * JDK动态代理是基于接口实现的，代理对象proxy需要实现被代理对象的接口
+	 * @throws Exception
+	 */
 	@Test
 	public void testJdkDynamicProxy() throws Exception {
-		/*
-			虽然调用的是WorldService里面的explode方法，但实际上执行的是JdkDynamicAopProxy.invoke方法
-		 */
 		WorldService proxy = (WorldService) new JdkDynamicAopProxy(advisedSupport).getProxy();
 		proxy.explode();
 	}
 
+	/**
+	 * CGLIB动态代理测试
+	 * CGLIB不需要依赖于接口，他直接继承自被代理对象
+	 * @throws Exception
+	 */
 	@Test
 	public void testCglibDynamicProxy() throws Exception {
 		WorldService proxy = (WorldService) new CglibAopProxy(advisedSupport).getProxy();
 		proxy.explode();
 	}
 
+	/**
+	 * 代理工厂
+	 * @throws Exception
+	 */
 	@Test
 	public void testProxyFactory() throws Exception {
+		/*
+			ProxyFactory使用的是JDK动态代理还是CGLIB动态代理主要就取决于ProxyFactory.ProxyTargetClass属性
+			为false就使用JDK动态代理，为true就使用CGLIB动态代理
+		 */
 		// 使用JDK动态代理
 		ProxyFactory factory = (ProxyFactory) advisedSupport;
 		factory.setProxyTargetClass(false);

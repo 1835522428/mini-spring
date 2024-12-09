@@ -30,6 +30,8 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 	 */
 	@Override
 	public Object getProxy() {
+		//通过Proxy.newProxyInstance创建代理对象proxy，参数：类加载器、目标类、一个InvocationHandler（名为"h"）
+		//代理对象proxy在执行被代理对象方法时（例如proxy.explode()）会直接调用h.invoke()方法
 		return Proxy.newProxyInstance(getClass().getClassLoader(), advised.getTargetSource().getTargetClass(), this);
 	}
 
