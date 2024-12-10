@@ -77,7 +77,7 @@ public class AutoProxyTest {
 
 		具体这个拦截器链是怎么工作的呢，以JDK动态代理为例，JDK生成的代理对象proxy在执行被代理对象的方法时，例如proxy.explode
 		实际上只有一行，就是h.invoke，h是InvocationHandler，InvocationHandler的实现类是JdkDynamicAopProxy
-		所以proxy.explode实际执行JdkDynamicAopProxy#invoke方法
+		所以proxy.explode实际执行JdkDynamicAopProxy#invoke方法，在这里面就运行了拦截器链，具体请转至JdkDynamicAopProxy#invoke
 
 	 */
 	@Test
