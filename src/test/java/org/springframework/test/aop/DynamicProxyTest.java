@@ -117,7 +117,11 @@ public class DynamicProxyTest {
 	public void testAdvisor() throws Exception {
 		WorldService worldService = new WorldServiceImpl();
 
-		//Advisor是Pointcut和Advice的组合
+		/*
+			Advisor是Pointcut和Advice的组合
+			Advisor里面存放了切点表达式和对应的增强方法
+			生成了之后会保存在AdvisedSupport.advisors里面，存入拦截器链
+		 */
 		String expression = "execution(* org.springframework.test.service.WorldService.explode(..))";
 		AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
 		advisor.setExpression(expression);
