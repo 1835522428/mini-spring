@@ -38,6 +38,8 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 	/**
 	 * 本方法是在proxy的方法里面实际执行的h.invoke函数，h是InvocationHandler的简称
 	 *
+	 * 参数：proxy --- 代理对象	method --- 被代理对象的方法	args --- method的参数
+	 *
 	 * 在这里面会调用方法拦截器链（MethodInterceptor Chain）里面的内容
 	 * 拦截器链存储在AdvisedSupport.advisors属性里
 	 * 每一个Advisor都包含两个东西：切点表达式 + MethodInterceptor
@@ -49,16 +51,29 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 		Object target = advised.getTargetSource().getTarget();
 		Class<?> targetClass = target.getClass();
 		Object retVal = null;
-		// 获取拦截器链
+		// 获取targetClass类的method方法的拦截器链
 		List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+		/*
+			如果拦截器链为空，则不需要生成代理对象，直接执行原方法（由被代理对象target执行）
+
+			但是拦截器链实际上好像不可能为空，因为在createBean方法中生成bean时，
+			只有当存在Advisor与当前bean匹配时，才会使用JDK或者CGLIB生成动态代理对象，并且保存对应Advisor到拦截器链
+			如果没有Advisor与当前bean匹配，就不会生成代理对象，而直接生成bean的实例
+			进到了这个invoke方法，一定是代理对象proxy的调用，既然已经生成了代理对象，拦截器链就不可能为空
+		 */
 		if (chain == null || chain.isEmpty()) {
 			return method.invoke(target, args);
 		} else {
-			// 将拦截器统一封装成ReflectiveMethodInvocation
+			/*
+				如果拦截器链不为空，则要生成动态代理对象，重点要看是怎么执行拦截器链的
+				因为拦截器链本身是乱序的，有可能After方法在前，Before方法在后
+				那到底怎么运行这个拦截器链呢
+				这里把拦截器链封装成了一个ReflectiveMethodInvocation
+			 */
 			MethodInvocation invocation =
 					new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
 			// Proceed to the joinpoint through the interceptor chain.
-			// 执行拦截器链
+			// 执行拦截器链，具体怎么执行的去查看 ReflectiveMethodInvocation#proceed 方法！！！
 			retVal = invocation.proceed();
 		}
 		return retVal;

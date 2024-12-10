@@ -50,13 +50,18 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 			return bean;
 		}
 
+		//读取xml中定义的所有Advisor，Advisor里面定义了两个东西：切点表达式+对应的方法拦截器
 		Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class)
 				.values();
 		try {
+			//相当于创建AdvisedSupport，AdvisedSupport里包含了创建proxy的全部信息
+			//在ProxyFactory中CglibAopProxy和JdkDynamicAopProxy都依赖于AdvisedSupport创建proxy
 			ProxyFactory proxyFactory = new ProxyFactory();
+			//挨个检查各个advisor的切点表达式，能否和当前的类匹配，advisor也要写在xml文件中
 			for (AspectJExpressionPointcutAdvisor advisor : advisors) {
 				ClassFilter classFilter = advisor.getPointcut().getClassFilter();
 				if (classFilter.matches(bean.getClass())) {
+					//如果匹配，就把当前的advisor加入到当前bean的拦截器链中
 					TargetSource targetSource = new TargetSource(bean);
 					proxyFactory.setTargetSource(targetSource);
 					proxyFactory.addAdvisor(advisor);
@@ -64,6 +69,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 				}
 			}
 			if (!proxyFactory.getAdvisors().isEmpty()) {
+				//生成代理对象并返回
 				return proxyFactory.getProxy();
 			}
 		} catch (Exception ex) {

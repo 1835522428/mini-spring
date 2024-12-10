@@ -12,8 +12,10 @@ import org.springframework.aop.PointcutAdvisor;
  */
 public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
 
+	//切点表达式
 	private AspectJExpressionPointcut pointcut;
 
+	//Advice有很多种，例如Before、After、AfterReturning、AfterReturning
 	private Advice advice;
 
 	private String expression;

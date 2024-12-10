@@ -14,6 +14,7 @@ import org.springframework.aop.AfterReturningAdvice;
  */
 public class AfterReturningAdviceInterceptor implements MethodInterceptor, AfterAdvice {
 
+	// 封装实际执行的AfterReturning方法，例如WorldServiceAfterReturnAdvice方法
 	private AfterReturningAdvice advice;
 
 	public AfterReturningAdviceInterceptor() {

@@ -58,7 +58,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 			BeanPostProcessor需要提前于其他bean实例化之前注册
 
 			这里只是调用beanFactory.addBeanPostProcessor
-			把各个BeanPostProcessor（实例）放到BeanFactory里面，没有执行
+			把各个BeanPostProcessor（实例）放到BeanFactory里面，没有执行（这里创建了BeanPostProcessor实例）
 			在调用BeanFactory.getBean实例化某个Bean时，进行初始化赋值操作前后会自动调用BeanPostProcessor
 			详解见测试类BeanFactoryPostProcessorAndBeanPostProcessorTest
 		 */

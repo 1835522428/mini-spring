@@ -4,6 +4,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 
 /**
+ * InstantiationAwareBeanPostProcessor是一种特殊的BeanPostProcessor
+ * 实现了该类则会创建某个bean的代理对象
  * @author derekyi
  * @date 2020/12/6
  */

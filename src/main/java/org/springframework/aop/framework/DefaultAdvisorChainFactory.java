@@ -26,7 +26,9 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory {
 	 */
 	@Override
 	public List<Object> getInterceptorsAndDynamicInterceptionAdvice(AdvisedSupport config, Method method, Class<?> targetClass) {
+		// 获取到所有的Advisors，注意Advice有很多种，例如Before、After、AfterReturning、AfterThrowing
 		Advisor[] advisors = config.getAdvisors().toArray(new Advisor[0]);
+		// 最后返回的方法拦截器链
 		List<Object> interceptorList = new ArrayList<>(advisors.length);
 		Class<?> actualClass = (targetClass != null ? targetClass : method.getDeclaringClass());
 		for (Advisor advisor : advisors) {

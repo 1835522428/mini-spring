@@ -11,6 +11,7 @@ import org.springframework.aop.MethodBeforeAdvice;
  */
 public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeAdvice {
 
+	// 实际执行的前置方法，例如WorldServiceBeforeAdvice
 	private MethodBeforeAdvice advice;
 
 	public MethodBeforeAdviceInterceptor() {

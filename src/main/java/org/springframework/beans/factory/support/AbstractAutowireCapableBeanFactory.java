@@ -28,11 +28,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Override
 	protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {
 		//如果bean需要代理，则直接返回代理对象
+		//resolveBeforeInstantiation这个方法直接尝试生成bean的代理对象
+		//如果没有和当前bean匹配的Advisor，就说明当前bean不需要增强，不需要代理对象，直接返回null
 		Object bean = resolveBeforeInstantiation(beanName, beanDefinition);
 		if (bean != null) {
 			return bean;
 		}
-
+		//bean不需要代理，则直接创建bean实例
 		return doCreateBean(beanName, beanDefinition);
 	}
 
@@ -44,6 +46,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @return
 	 */
 	protected Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
+		//传参：被代理对象的类以及beanName
 		Object bean = applyBeanPostProcessorsBeforeInstantiation(beanDefinition.getBeanClass(), beanName);
 		if (bean != null) {
 			bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
@@ -53,6 +56,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class beanClass, String beanName) {
 		for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+			//如果BeanPostProcessor实现了InstantiationAwareBeanPostProcessor
+			//则尝试创建beanName对应bean的代理对象，在这个方法里面还要去做切点表达式匹配，匹配上的bean才会真正创建代理对象
 			if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
 				Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInstantiation(beanClass, beanName);
 				if (result != null) {

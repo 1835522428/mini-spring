@@ -9,8 +9,13 @@
 
     <bean id="worldService" class="org.springframework.test.service.WorldServiceImpl"/>
 
+    <!--DefaultAdvisorAutoProxyCreator是一个特殊的BeanPostProcessor，用于生成代理对象
+        每次在createBean里面实际上都会先调用这个方法，去尝试创建bean的代理对象
+        如果创建成功就返回代理对象proxy，创建失败就去创建原对象
+        创建成功与失败主要看有没有Advisor匹配当前的bean，有一个Advisor匹配bean，就会创建成功-->
     <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
+    <!-- Advisor，每个Advisor里面有两个属性：切点表达式和对应的方法拦截器 -->
     <bean id="pointcutAdvisor" class="org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
         <property name="expression" value="execution(* org.springframework.test.service.WorldService.explode(..))"/>
         <property name="advice" ref="methodInterceptor"/>

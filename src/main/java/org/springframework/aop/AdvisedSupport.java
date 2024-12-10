@@ -24,6 +24,7 @@ public class AdvisedSupport {
 
 	private MethodMatcher methodMatcher;
 
+	//方法拦截器链缓存，最开始为空，完成一个方法的拦截器链查找之后，就放入这里，避免第二次查询还要遍历查找
 	private transient Map<Integer, List<Object>> methodCache;
 
 	AdvisorChainFactory advisorChainFactory = new DefaultAdvisorChainFactory();
