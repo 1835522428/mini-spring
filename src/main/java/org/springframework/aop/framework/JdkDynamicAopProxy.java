@@ -67,7 +67,7 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 			/*
 				如果拦截器链不为空，则要生成动态代理对象，重点要看是怎么执行拦截器链的
 				因为拦截器链本身是乱序的，有可能After方法在前，Before方法在后
-				那到底怎么运行这个拦截器链呢
+				那到底怎么运行这个拦截器链呢，具体请看invocation.proceed()方法
 				这里把拦截器链封装成了一个ReflectiveMethodInvocation
 			 */
 			MethodInvocation invocation =
