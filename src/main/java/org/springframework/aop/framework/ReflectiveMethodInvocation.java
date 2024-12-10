@@ -39,7 +39,7 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
 
 	/**
 	 * 拦截器链运行函数
-	 *
+	 * <p>
 	 * 这个函数本身的逻辑很简单，就是从拦截器链下标为0开始，通过反射挨个运行拦截器链上记载的所有MethodInterceptor
 	 * 但是有个大问题，拦截器链本身是乱序的，After方法有可能在Before方法之前，那直接运行一遍拦截器链是怎么保证运行顺序的呢
 	 * 比方说现在拦截器链上一共就两个MethodInterceptor，下标0是AfterReturning方法，下标1是Before方法
@@ -70,7 +70,7 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
 	 * 前置增强方法执行完毕之后，执行 mi.proceed() 回到此方法，此时 this.currentInterceptorIndex 这个属性已经是1了
 	 * 方法拦截器中所有方法调用完毕，去执行了 method.invoke 执行了被代理对象的原方法！！！
 	 * 执行完毕之后，程序 return，但是！！！！return到哪里去呢！！！别忘了最开始的AfterReturning方法拦截器没执行完呢！！！
-	 * 这个有点像递归调用，最开始的AfterReturning方法拦截器被压在栈底了，等待 mi.proceed() 执行完毕
+	 * 这个其实就是递归调用，最开始的AfterReturning方法拦截器被压在栈底了，等待 mi.proceed() 执行完毕（很巧妙的递归调用，是执行拦截器链的核心）
 	 * 现在 mi.proceed() 终于执行完了，最后去执行了AfterReturning方法拦截器中的 this.advice.afterReturning，执行实际的后置增强方法！！！
 	 * 这时，整个拦截器链运行完毕！！！返回到JdkDynamicAopProxy#invoke方法
 	 * @return

@@ -37,14 +37,14 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 
 	/**
 	 * 本方法是在proxy的方法里面实际执行的h.invoke函数，h是InvocationHandler的简称
-	 *
+	 * <p>
 	 * 参数：proxy --- 代理对象	method --- 被代理对象的方法	args --- method的参数
-	 *
+	 * <p>
 	 * 在这里面会调用方法拦截器链（MethodInterceptor Chain）里面的内容
 	 * 拦截器链存储在AdvisedSupport.advisors属性里
 	 * 每一个Advisor都包含两个东西：切点表达式 + MethodInterceptor
 	 * 所以AdvisedSupport.advisors就是所有拦截器的总和，称为拦截器链
-	 *
+	 * <p>
 	 * 这个invoke方法啰嗦了半天，其实就干了一件事情：运行拦截器链 invocation.proceed()
 	 */
 	@Override
