@@ -44,6 +44,8 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 	 * 拦截器链存储在AdvisedSupport.advisors属性里
 	 * 每一个Advisor都包含两个东西：切点表达式 + MethodInterceptor
 	 * 所以AdvisedSupport.advisors就是所有拦截器的总和，称为拦截器链
+	 *
+	 * 这个invoke方法啰嗦了半天，其实就干了一件事情：运行拦截器链 invocation.proceed()
 	 */
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
