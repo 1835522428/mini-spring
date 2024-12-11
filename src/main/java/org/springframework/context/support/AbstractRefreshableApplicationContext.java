@@ -19,9 +19,11 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	protected final void refreshBeanFactory() throws BeansException {
 		DefaultListableBeanFactory beanFactory = createBeanFactory();
-		//通过资源加载器加载资源，并从资源中读出BeanDefinition
-		//调用 XmlBeanDefinitionReader.loadBeanDefinitions，加载xml文件中的BeanDefinition
-		//XmlBeanDefinitionReader底层是用ResourceLoader获取InputStream读取文件的
+		/*
+			通过资源加载器加载资源，并从资源中读出BeanDefinition
+			调用 XmlBeanDefinitionReader.loadBeanDefinitions，加载xml文件中的BeanDefinition
+			XmlBeanDefinitionReader底层是用ResourceLoader获取InputStream读取文件的
+		 */
 		loadBeanDefinitions(beanFactory);
 		this.beanFactory = beanFactory;
 	}

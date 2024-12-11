@@ -13,7 +13,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableA
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory, this);
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
-			//这个loadBeanDefinitions就是那个重载了三次的方法，最后都要去调用loadBeanDefinitions(Resource resource)
+			// 这个loadBeanDefinitions就是那个重载了三次的方法，最后都要去调用loadBeanDefinitions(Resource resource)
 			beanDefinitionReader.loadBeanDefinitions(configLocations);
 		}
 	}

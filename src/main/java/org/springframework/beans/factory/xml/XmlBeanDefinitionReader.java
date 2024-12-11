@@ -95,6 +95,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 		//解析context:component-scan标签并扫描指定包中的类，提取类信息，组装成BeanDefinition
 		// 在 spring.xml 文件中没有 component-scan 标签，直接写的 bean，所以这里暂时不会运行
+		// 在package-scan.xml里面用到了
 		Element componentScan = root.element(COMPONENT_SCAN_ELEMENT);
 		if (componentScan != null) {
 			String scanPath = componentScan.attributeValue(BASE_PACKAGE_ATTRIBUTE);
