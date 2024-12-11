@@ -22,6 +22,7 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 
 	public static final String PLACEHOLDER_SUFFIX = "}";
 
+	// 记录要读入的.properties文件的位置
 	private String location;
 
 	@Override
@@ -62,6 +63,7 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 	 * @throws BeansException
 	 */
 	private void processProperties(ConfigurableListableBeanFactory beanFactory, Properties properties) throws BeansException {
+		// 拿到所有的BeanDefinitionNames，例如"PropertyPlaceholderConfigurer"和"Car"
 		String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
 		for (String beanName : beanDefinitionNames) {
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
@@ -71,9 +73,12 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 
 	private void resolvePropertyValues(BeanDefinition beanDefinition, Properties properties) {
 		PropertyValues propertyValues = beanDefinition.getPropertyValues();
+		// 遍历当前BeanDefinition的所有属性值
 		for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
 			Object value = propertyValue.getValue();
+			// 如果属性值是一个String，就有可能是一个占位符，例如"${brand}"，但是也有可能这个属性值本身就是一个String，所以还要进一步判断
 			if (value instanceof String) {
+				// 检查到底是不是一个占位符
 				value = resolvePlaceholder((String) value, properties);
 				propertyValues.addPropertyValue(new PropertyValue(propertyValue.getName(), value));
 			}
@@ -84,11 +89,14 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 		//TODO 仅简单支持一个占位符的格式
 		String strVal = value;
 		StringBuffer buf = new StringBuffer(strVal);
+		// 如果包含以"${"开始，以"}"结尾的子串，就认为是一个占位符
 		int startIndex = strVal.indexOf(PLACEHOLDER_PREFIX);
 		int endIndex = strVal.indexOf(PLACEHOLDER_SUFFIX);
 		if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+			// 获取到占位符里面需要的值，例如"${brand}"，就获取到"brand"
 			String propKey = strVal.substring(startIndex + 2, endIndex);
 			String propVal = properties.getProperty(propKey);
+			// 替换
 			buf.replace(startIndex, endIndex + 1, propVal);
 		}
 		return buf.toString();

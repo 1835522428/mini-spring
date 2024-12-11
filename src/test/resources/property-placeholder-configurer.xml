@@ -7,10 +7,14 @@
 		 http://www.springframework.org/schema/context
 		 http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
+    <!--告诉PropertyPlaceholderConfigurer，.properties文件在那里
+        PropertyPlaceholderConfigurer本质上是一个BeanFactoryPostProcessor-->
     <bean class="org.springframework.beans.factory.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:car.properties" />
     </bean>
 
+    <!--初始"brand"属性的值用"${brand}"占位符占住了，没有传入实际的值
+        在ApplicationContext里面调用BeanFactoryPostProcessor去改变的BeanDefinition里面的值-->
     <bean id="car" class="org.springframework.test.bean.Car">
         <property name="brand" value="${brand}" />
     </bean>
