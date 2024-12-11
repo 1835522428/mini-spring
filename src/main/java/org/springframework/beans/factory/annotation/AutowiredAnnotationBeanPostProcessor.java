@@ -29,16 +29,20 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
 
 	@Override
 	public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
-		//处理@Value注解
+		// 处理@Value注解
 		Class<?> clazz = bean.getClass();
+		// 反射，获取所有的公开属性
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
+			// 挨个检查属性上有没有Value注解
 			Value valueAnnotation = field.getAnnotation(Value.class);
 			if (valueAnnotation != null) {
+				// 这个value是注解的值，例如@Value("${brand}")，那这里就获得"${brand}"，实际就是个占位符
 				Object value = valueAnnotation.value();
+				// 去.properties文件中找这个占位符对应的实际值
 				value = beanFactory.resolveEmbeddedValue((String) value);
 
-				//类型转换
+				// 类型转换
 				Class<?> sourceType = value.getClass();
 				Class<?> targetType = (Class<?>) TypeUtil.getType(field);
 				ConversionService conversionService = beanFactory.getConversionService();
@@ -52,7 +56,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
 			}
 		}
 
-		//处理@Autowired注解
+		// 处理@Autowired注解
 		for (Field field : fields) {
 			Autowired autowiredAnnotation = field.getAnnotation(Autowired.class);
 			if (autowiredAnnotation != null) {

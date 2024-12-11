@@ -19,6 +19,8 @@ public class Car {
 
 	private long date;
 
+
+	// brand为空，但是注解Value这个注解是有属性的，属性值为"${brand}"
 	@Value("${brand}")
 	private String brand;
 

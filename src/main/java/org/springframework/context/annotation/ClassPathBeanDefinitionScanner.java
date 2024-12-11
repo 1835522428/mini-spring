@@ -40,6 +40,8 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		}
 
 		// 注册处理@Autowired和@Value注解的BeanPostProcessor
+		// 非常重要！！！AutowiredAnnotationBeanPostProcessor是在这里注册进BeanDefinition的
+		// Spring内部自动注册了这个BeanPostProcessor，所以不需要单独写入xml文件！！！
 		registry.registerBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME, new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class));
 	}
 

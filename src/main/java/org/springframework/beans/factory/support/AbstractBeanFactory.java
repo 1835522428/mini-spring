@@ -114,6 +114,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	public String resolveEmbeddedValue(String value) {
+		// 传入占位符，传出.properties中实际的值
+		// 例如传入"${brand}"，传出"lamborghini"
 		String result = value;
 		for (StringValueResolver resolver : this.embeddedValueResolvers) {
 			result = resolver.resolveStringValue(result);

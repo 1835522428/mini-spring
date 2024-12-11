@@ -85,6 +85,12 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 		}
 	}
 
+	/**
+	 * 根据占位符value获取.properties文件中的实际值
+	 * @param value
+	 * @param properties
+	 * @return
+	 */
 	private String resolvePlaceholder(String value, Properties properties) {
 		//TODO 仅简单支持一个占位符的格式
 		String strVal = value;

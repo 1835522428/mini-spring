@@ -23,7 +23,8 @@ public class PackageScanTest {
 		最后自动放到BeanDefinitionMap里面
 		但是这种自动创建的BeanDefinition本身PropertyValues是空的，因为扫描的时候只会得知哪些类上面有Component注解，需要注册为bean
 		但是不会去看这个类里面都有哪些属性，所以实际的BeanDefinition里面只有beanId和Class
-		那么这种情况下属性赋值是怎么做的呢？答案是通过 @Value注解 + BeanFactoryPostProcessor 修改BeanDefinition
+		那么这种情况下属性赋值是怎么做的呢？答案是通过 @Value注解 + BeanPostProcessor 在bean实例化之后，属性赋值之前做一点手脚
+		见ValueAnnotationTest测试类
 	 */
 	@Test
 	public void testScanPackage() throws Exception {

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.*;
 import org.springframework.core.convert.ConversionService;
 
@@ -27,14 +28,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 	@Override
 	protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {
-		//如果bean需要代理，则直接返回代理对象
-		//resolveBeforeInstantiation这个方法直接尝试生成bean的代理对象
-		//如果没有和当前bean匹配的Advisor，就说明当前bean不需要增强，不需要代理对象，直接返回null
+		// 如果bean需要代理，则直接返回代理对象
+		// resolveBeforeInstantiation这个方法直接尝试生成bean的代理对象
+		// 如果没有和当前bean匹配的Advisor，就说明当前bean不需要增强，不需要代理对象，直接返回null
 		Object bean = resolveBeforeInstantiation(beanName, beanDefinition);
 		if (bean != null) {
 			return bean;
 		}
-		//bean不需要代理，则直接创建bean实例
+		// bean不需要代理，则直接创建bean实例
 		return doCreateBean(beanName, beanDefinition);
 	}
 
@@ -81,7 +82,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 实例化
 			bean = createBeanInstance(beanDefinition);
 
-			//为解决循环依赖问题，将实例化后的bean放进缓存中提前暴露
+			// 为解决循环依赖问题，将实例化后的bean放进缓存中提前暴露
 			if (beanDefinition.isSingleton()) {
 				Object finalBean = bean;
 				addSingletonFactory(beanName, new ObjectFactory<Object>() {
@@ -92,17 +93,21 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				});
 			}
 
-			//实例化bean之后执行
+			// 实例化bean之后执行
 			boolean continueWithPropertyPopulation = applyBeanPostProcessorsAfterInstantiation(beanName, bean);
 			if (!continueWithPropertyPopulation) {
 				// 不需要进行后续初始化步骤
 				return bean;
 			}
-			//在设置bean属性之前，允许BeanPostProcessor修改属性值
+			/*
+				在设置bean属性之前，允许BeanPostProcessor修改属性值，这一步实际实现了解析@Value注解
+				被component-scan扫描得到的BeanDefinition实际上PropertyValues是空的，需要结合@Value注解才能为属性赋值
+				对当前已经实例化的bean来说，检查其有没有属性标注了@Value，如果有，则根据.properties文件为属性直接赋值
+			 */
 			applyBeanPostProcessorsBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
-			//为bean填充属性
+			// 为bean填充属性
 			applyPropertyValues(beanName, bean, beanDefinition);
-			//执行bean的初始化方法和BeanPostProcessor的前置和后置处理方法
+			// 执行bean的初始化方法和BeanPostProcessor的前置和后置处理方法
 			bean = initializeBean(beanName, bean, beanDefinition);
 		} catch (Exception e) {
 			throw new BeansException("Instantiation of bean failed", e);
@@ -157,6 +162,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 	/**
 	 * 在设置bean属性之前，允许BeanPostProcessor修改属性值
+	 * 实际执行AutowiredAnnotationBeanPostProcessor里面的内容
+	 * 解析@Value注解，并进行属性赋值
 	 *
 	 * @param beanName
 	 * @param bean

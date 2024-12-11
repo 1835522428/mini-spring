@@ -93,7 +93,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 		Element root = document.getRootElement();
 
-		//解析context:component-scan标签并扫描指定包中的类，提取类信息，组装成BeanDefinition
+		// 解析context:component-scan标签并扫描指定包中的类，提取类信息，组装成BeanDefinition
 		// 在 spring.xml 文件中没有 component-scan 标签，直接写的 bean，所以这里暂时不会运行
 		// 在package-scan.xml里面用到了
 		Element componentScan = root.element(COMPONENT_SCAN_ELEMENT);
@@ -102,7 +102,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			if (StrUtil.isEmpty(scanPath)) {
 				throw new BeansException("The value of base-package attribute can not be empty or null");
 			}
-			// 扫描 component-scan 路径
+			// 扫描 component-scan 路径，通过扫描的方式获取的bean暂时PropertyValues为空，后续需要通过@Value注解注入属性值
 			scanPackage(scanPath);
 		}
 
