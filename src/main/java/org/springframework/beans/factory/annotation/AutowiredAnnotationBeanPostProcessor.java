@@ -51,7 +51,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
 						value = conversionService.convert(value, targetType);
 					}
 				}
-
+				// 通过反射设置属性值，替换掉占位符
 				BeanUtil.setFieldValue(bean, field.getName(), value);
 			}
 		}

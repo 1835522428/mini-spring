@@ -47,7 +47,7 @@ public class ValueAnnotationTest {
 		那么在填充属性之前，也就是applyBeanPostProcessorsBeforeApplyingPropertyValues这个方法里面，就是解析Value的逻辑
 		在该函数中，首先获取实现了InstantiationAwareBeanPostProcessor接口的BeanPostProcessor
 		实际也就是获取了AutowiredAnnotationBeanPostProcessor，之后执行了它的postProcessPropertyValues方法
-
+		在这里完成了占位符替换为实际值的操作，直接为bean中有Value注解的属性完成了赋值
 	 */
 	@Test
 	public void testValueAnnotation() throws Exception {

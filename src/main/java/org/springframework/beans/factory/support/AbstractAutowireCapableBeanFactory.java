@@ -172,7 +172,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected void applyBeanPostProcessorsBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
 		for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
 			if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+				// 这里面查询了占位符的实际数值，并通过反射替换掉了占位符
 				PropertyValues pvs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(beanDefinition.getPropertyValues(), bean, beanName);
+				/*
+					如果pvs本身就是空的，那就不进行这一步
+					如果pvs里面有值，就把pvs里面的值都加到BeanDefinition.PropertyValues里面
+				 */
 				if (pvs != null) {
 					for (PropertyValue propertyValue : pvs.getPropertyValues()) {
 						beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
