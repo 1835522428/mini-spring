@@ -98,10 +98,27 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				Object finalBean = bean;
 				/*
 					这个方法要解释一下，本质上就是调用：
-					addSingletonFactory(beanName, objectFactory);
-					其中：
-					ObjectFactory objectFactory = new ObjectFactory<Object>(){}
+						addSingletonFactory(beanName, objectFactory);
+					往三级缓存加一个东西，其中：
+						ObjectFactory objectFactory = new ObjectFactory<Object>(){}
 					并重写了ObjectFactory#getObject方法
+					这个singletonFactory就是三级缓存，但是它与singletonObjects（一级缓存）、earlySingletonObjects（二级缓存）有点区别
+					一级缓存和二级缓存是Map<String, Object>类型，这个三级缓存是一个Map<String, ObjectFactory<?>>
+
+					ObjectFactory#getObject方法实际上创建了当前bean的代理对象；如果bean的拦截器链为空，则将原对象存储在三级缓存里
+
+					注意，这里本身不执行ObjectFactory#getObject函数，只是定义了一个ObjectFactory放入singletonFactory
+					实际是在getSingleton方法中调用的（getBean方法会首先尝试调用getSingleton从缓存取bean）：
+						singletonObject = singletonFactory.getObject();
+
+					每个bean在实例化之后、属性赋值之前都会向singletonFactory里面增加一个ObjectFactory
+					调用各个ObjectFactory的getObject方法返回的内容是不一样的！
+					因为写死在getEarlyBeanReference方法里面的参数不同
+					比方说：
+						singletonFactories.get("A").getObject()
+					实际执行的是：getEarlyBeanReference("A", beanDefinition_A, A)
+						singletonFactories.get("B").getObject()
+					实际执行的是：getEarlyBeanReference("B", beanDefinition_B, B)
 				 */
 				addSingletonFactory(beanName, new ObjectFactory<Object>() {
 					@Override
@@ -149,14 +166,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		for (BeanPostProcessor bp : getBeanPostProcessors()) {
 			// 去找创建代理对象的那个BeanPostProcessor，即DefaultAdvisorAutoProxyCreator
 			if (bp instanceof InstantiationAwareBeanPostProcessor) {
-				// 执行DefaultAdvisorAutoProxyCreator#getEarlyBeanReference方法
+				// 执行DefaultAdvisorAutoProxyCreator#getEarlyBeanReference方法，这里首次创建了代理对象proxy并返回
 				exposedObject = ((InstantiationAwareBeanPostProcessor) bp).getEarlyBeanReference(exposedObject, beanName);
+				// 如果成功创建代理对象（当前bean拦截器链不为空），就返回代理对象
 				if (exposedObject == null) {
 					return exposedObject;
 				}
 			}
 		}
-
+		// 如果当前bean拦截器链为空，无需创建代理对象，就返回原对象
 		return exposedObject;
 	}
 

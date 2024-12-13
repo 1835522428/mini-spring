@@ -37,7 +37,7 @@ public class CircularReferenceWithProxyBeanTest {
 		但是在实例化之后，属性赋值之前创建的这个代理对象，一定是一个残缺的，它里面没有属性值
 		我先把这个代理对象缓存起来，供B完成属性赋值，之后再在A的创建流程中完善这个代理对象，就没问题了
 
-		于是，在doCreateBean方法中，bean完成实例化之后通过缓存解决循环依赖的代码变成了这样：
+		于是，在doCreateBean方法中，bean完成实例化之后，通过缓存解决循环依赖的代码变成了这样：
 		-------------------------------------------------------------------------------------------------------
 			// 为解决循环依赖问题，将实例化后的bean放进缓存中提前暴露
 			if (beanDefinition.isSingleton()) {
@@ -50,7 +50,22 @@ public class CircularReferenceWithProxyBeanTest {
 				});
 			}
 		-------------------------------------------------------------------------------------------------------
+		这个可以简单理解为：
+			bean实例化完成之后、属性赋值之前，
+			如果bean的拦截器链不为空，则提前创建bean的代理对象，并把代理对象放入三级缓存singletonFactory里；
+			如果bean的拦截器链不为空，则将bean实例本身提前放入三级缓存中
 
+		总体流程如下：
+			首先getBean(A)，A完成实例化之后、属性赋值之前提前生成自己的代理对象proxyA，然后放入三级缓存singletonFactory里面
+			之后进行属性赋值，发现A依赖于B，转而执行getBean(B)
+			B实例化之后、属性赋值之前，将B实例放入三级缓存，之后执行属性赋值，发现B依赖于A，转而执行getBean(A)
+			执行getBean(A)时，先从缓存中查找（getSingleton方法），发现三级缓存中有A，那就直接返回A实例
+			并且把A从三级缓存拿到二级缓存！
+			getBean(B)完成，将B从三级缓存拿到一级缓存，并返回B实例给getBean(A)流程，A实例化完毕，将proxyA从二级缓存拿到一级缓存，结束
+
+			所以一级缓存存储的是完全实例化完成的bean；
+			二级缓存存储的是未完成实例化但是被其他bean依赖过的bean；
+			三级缓存存储的是未完成实例化且暂时没有被其他bean依赖过的bean
 	 */
 	@Test
 	public void testCircularReference() throws Exception {
