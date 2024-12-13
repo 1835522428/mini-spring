@@ -81,6 +81,59 @@ public class AutoProxyTest {
 		具体这个拦截器链是怎么工作的呢，以JDK动态代理为例，JDK生成的代理对象proxy在执行被代理对象的方法时，例如proxy.explode
 		实际上只有一行，就是h.invoke，h是InvocationHandler，InvocationHandler的实现类是JdkDynamicAopProxy
 		所以proxy.explode实际执行JdkDynamicAopProxy#invoke方法，在这里面就运行了拦截器链，具体请转至JdkDynamicAopProxy#invoke
+
+		===========================================================================================================
+														BUG FIX
+		===========================================================================================================
+		使用上面的方式无法完成代理对象的属性赋值，作者修改了上述代码
+		上面说在createBean函数中，如果需要生成代理对象则直接生成代理对象，然后将doCreateBean短路，不生成被代理对象的bean实例
+		但是这样无法对代理对象进行属性赋值，例如被代理对象有一个name属性，赋值为earth，但是代理对象的name属性是null
+
+		所以现在无论怎样都会去执行doCreateBean方法，整个createBean方法简化为：
+		-----------------------------------------------------------------------------------------------------------
+			protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {
+				return doCreateBean(beanName, beanDefinition);
+			}
+		-----------------------------------------------------------------------------------------------------------
+
+		在doCreateBean中，首先完成被代理对象的实例化以及属性赋值操作，之后调用：
+		-----------------------------------------------------------------------------------------------------------
+			// 执行bean的初始化方法和BeanPostProcessor的前置和后置处理方法
+			bean = initializeBean(beanName, bean, beanDefinition);
+		-----------------------------------------------------------------------------------------------------------
+
+		主要关注这里面执行BeanPostProcessor的后置处理方法：
+		-----------------------------------------------------------------------------------------------------------
+			//执行BeanPostProcessor的后置处理
+			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+		-----------------------------------------------------------------------------------------------------------
+
+		在之前讲过，在执行BeanPostProcessor后置处理时，会挨个遍历BeanPostProcessor，执行所有的postProcessAfterInitialization方法
+		那么DefaultAdvisorAutoProxyCreator本身就是一个BeanPostProcessor，在他的postProcessAfterInitialization方法中是这么写的：
+		-----------------------------------------------------------------------------------------------------------
+			public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+				if (!earlyProxyReferences.contains(beanName)) {
+					return wrapIfNecessary(bean, beanName);
+				}
+				return bean;
+			}
+		-----------------------------------------------------------------------------------------------------------
+
+		这个earlyProxyReferences是三级缓存，后面再讲，简单来说就是如果三级缓存中没有这个bean，就会去执行wrapIfNecessary方法
+		如果三级缓存中有这个bean，认为代理对象已经被创建了，就直接返回
+		那么在wrapIfNecessary里面就回去判断有没有Advisor匹配当前的bean，如果匹配，就把Advisor.MethodInterceptor加入到bean的拦截器链中
+		如果最后拦截器链为空，则说明当前对象不需要创建代理对象，返回原先的bean；
+		如果拦截器链非空，则根据传入的bean及其拦截器链，创建代理对象
+			（注意，此时这个被代理bean是已经经过实例化和属性赋值的，所以用它来创建代理对象，代理对象里面的属性也是有值的）
+
+		那么经过BeanPostProcessor后置处理，最后返回给doCreateBean的这个wrappedBean其实就变成了代理对象
+
+		之后会把这个代理对象通过 addSingleton(beanName, exposedObject); 放到一级缓存中
+		那么实际存在一级缓存中的bean还是代理对象proxy而不是被代理对象，被代理对象的实例确实被创建出来了，但是只是为了生成proxy，没有被记录下来
+		这样生成的proxy是有属性值的
+
+		那么现在其实变简单了，DefaultAdvisorAutoProxyCreator本身作为一个BeanPostProcessor
+		它的执行位置和其他的BeanPostProcessor完全一致，不再把它单拎出来了
 	 */
 	@Test
 	public void testAutoProxy() throws Exception {

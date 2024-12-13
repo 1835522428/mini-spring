@@ -34,8 +34,10 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
 	@Override
 	public Object getSingleton(String beanName) {
+		// 从一级缓存查找
 		Object singletonObject = singletonObjects.get(beanName);
 		if (singletonObject == null) {
+			// 从二级缓存查找
 			singletonObject = earlySingletonObjects.get(beanName);
 			if (singletonObject == null) {
 				ObjectFactory<?> singletonFactory = singletonFactories.get(beanName);

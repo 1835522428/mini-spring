@@ -28,9 +28,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 	@Override
 	protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {
-		// 如果bean需要代理，则直接返回代理对象
-		// resolveBeforeInstantiation这个方法直接尝试生成bean的代理对象
-		// 如果没有和当前bean匹配的Advisor，就说明当前bean不需要增强，不需要代理对象，直接返回null
+		/*
+			如果bean需要代理，则直接返回代理对象
+			resolveBeforeInstantiation这个方法直接尝试生成bean的代理对象
+			如果没有和当前bean匹配的Advisor，就说明当前bean不需要增强，不需要代理对象，直接返回null
+
+			作者在BUG FIX中修改了resolveBeforeInstantiation这个函数的代码
+			现在这个函数必定返回null，无论怎样都会去执行doCreateBean方法，所以这部分可以忽略
+			整个createBean方法可以简化为：
+			----------------------------------------------------------------------------------------------------------
+				protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {
+					return doCreateBean(beanName, beanDefinition);
+				}
+			----------------------------------------------------------------------------------------------------------
+		 */
 		Object bean = resolveBeforeInstantiation(beanName, beanDefinition);
 		if (bean != null) {
 			return bean;
