@@ -55,6 +55,9 @@ public class AutoProxyTest {
 			这个时候才会执行后置增强方法，所以实际执行的方法拦截器本身不会乱序
 
 		生成代理对象proxy返回到createBean方法中后，doCreateBean会被短路，直接返回代理对象proxy
+		（bug fix中已经更改实现方法，doCreateBean不会被短路，resolveBeforeInstantiation方法总是返回null，proxy不再在此方法里生成
+		所以无论怎样都会运行doCreateBean方法，生成被代理对象的bean实例，并为其属性赋值，在init方法之后的BeanPostProcessor后置处理中
+		才会根据已经实例化的bean生成动态代理对象proxy并返回）
 
 		这里需要注意一点，既然说InstantiationAwareBeanPostProcessor是特殊的BeanPostProcessor，那么它必定实现了BeanPostProcessor接口
 		每个Bean在实例化完成之后，需要经过BeanPostProcessor前置处理，init方法，BeanPostProcessor后置处理
