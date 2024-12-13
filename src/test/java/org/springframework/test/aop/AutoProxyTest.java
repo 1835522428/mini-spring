@@ -119,8 +119,8 @@ public class AutoProxyTest {
 			}
 		-----------------------------------------------------------------------------------------------------------
 
-		这个earlyProxyReferences是三级缓存，后面再讲，简单来说就是如果三级缓存中没有这个bean，就会去执行wrapIfNecessary方法
-		如果三级缓存中有这个bean，认为代理对象已经被创建了，就直接返回
+		这个earlyProxyReferences后面再讲，简单来说就是如果在earlyProxyReferences中没有这个bean，就会去执行wrapIfNecessary方法
+		如果earlyProxyReferences中有这个bean，认为代理对象已经被创建了，就直接返回
 		那么在wrapIfNecessary里面就回去判断有没有Advisor匹配当前的bean，如果匹配，就把Advisor.MethodInterceptor加入到bean的拦截器链中
 		如果最后拦截器链为空，则说明当前对象不需要创建代理对象，返回原先的bean；
 		如果拦截器链非空，则根据传入的bean及其拦截器链，创建代理对象

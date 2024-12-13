@@ -41,6 +41,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 	@Override
 	public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
 		earlyProxyReferences.add(beanName);
+		// 在这里第一次创建代理对象！！
 		return wrapIfNecessary(bean, beanName);
 	}
 
