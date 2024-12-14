@@ -43,7 +43,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 				ObjectFactory<?> singletonFactory = singletonFactories.get(beanName);
 				if (singletonFactory != null) {
 					// 每个bean都存储的singletonFactory#getObject方法都是不一样的，见doCreateBean方法
-					// 实际上是在调用getEarlyBeanReference方法
+					// 实际上是在调用getEarlyBeanReference方法，获取到bean实例或者bean的代理对象
 					singletonObject = singletonFactory.getObject();
 					//从三级缓存放进二级缓存
 					earlySingletonObjects.put(beanName, singletonObject);

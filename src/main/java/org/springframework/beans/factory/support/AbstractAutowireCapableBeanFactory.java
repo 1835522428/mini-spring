@@ -105,7 +105,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					这个singletonFactory就是三级缓存，但是它与singletonObjects（一级缓存）、earlySingletonObjects（二级缓存）有点区别
 					一级缓存和二级缓存是Map<String, Object>类型，这个三级缓存是一个Map<String, ObjectFactory<?>>
 
-					ObjectFactory#getObject方法实际上创建了当前bean的代理对象；如果bean的拦截器链为空，则将原对象存储在三级缓存里
+					ObjectFactory#getObject方法实际上创建了当前bean的代理对象；如果bean的拦截器链为空，则返回原对象
 
 					注意，这里本身不执行ObjectFactory#getObject函数，只是定义了一个ObjectFactory放入singletonFactory
 					实际是在getSingleton方法中调用的（getBean方法会首先尝试调用getSingleton从缓存取bean）：
