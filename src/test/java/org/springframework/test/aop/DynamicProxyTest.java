@@ -76,7 +76,7 @@ public class DynamicProxyTest {
 		/*
 			获取CGLIB动态代理对象proxy
 
-			由于CGLIB不基于接口实现动态代理，而是生成了被代理类的子类
+			由于CGLIB不基于接口实现动态代理，而是生成了被代理类的子类（所以要使用CGLIB的话，类不能定义为final，final修饰的不可以被继承！！！）
 			所以这里proxy可以定义成
 				WorldServiceImpl proxy = (WorldServiceImpl) new CglibAopProxy(advisedSupport).getProxy();
 				//可以用父类接收子类，因为父类的范围更大，实现多态的基础 https://blog.51cto.com/u_16175493/10082683
